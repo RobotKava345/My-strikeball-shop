@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}SB Gear - Кошик{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Кошик</h1>
+
+{% if items %}
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Товар</th>
+            <th>Ціна</th>
+            <th>Кількість</th>
+            <th>Сума</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in items %}
+        <tr>
+            <td>{{ item['name'] }}</td>
+            <td>{{ item['price'] }} ₴</td>
+            <td>{{ item['qty'] }}</td>
+            <td>{{ item['total_price'] }} ₴</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="d-flex justify-content-between align-items-center mt-3">
+    <h4>Всього: {{ total }} ₴</h4>
+    <div>
+        <a href="{{ url_for('clear_cart') }}" class="btn btn-danger me-2">Очистити кошик</a>
+        <a href="{{ url_for('order') }}" class="btn btn-primary">Оформити замовлення</a>
+    </div>
+</div>
+
+{% else %}
+<p>Ваш кошик порожній.</p>
+<a href="{{ url_for('catalog_page') }}" class="btn btn-primary mt-3">Перейти до каталогу</a>
+{% endif %}
+
+{% endblock %}
