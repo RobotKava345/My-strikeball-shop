@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from db import get_db
-
+import os
 app = Flask(__name__)
-app.secret_key = "your_secret_key"
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', ye020209)
 
 @app.route("/")
 def index():
