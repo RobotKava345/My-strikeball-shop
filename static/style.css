@@ -1,177 +1,282 @@
+:root {
+    --sb-dark: #1a1a1a;
+    --sb-accent: #ff6600;
+}
+
+/* Base & Layout */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+}
+
 body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
     background-color: #f5f5f5;
     color: #333333;
     font-family: 'Roboto', sans-serif;
-    line-height: 1.5;
+    line-height: 1.6;
+}
+
+main {
+    flex: 1;
+    padding-top: 80px; /* Для фиксированного навбара */
 }
 
 h1, h2, h3, h4, h5, h6 {
     font-family: 'Montserrat', sans-serif;
     font-weight: 600;
     color: #1a1a1a;
+    margin-bottom: 1rem;
 }
 
 a {
     text-decoration: none;
     color: inherit;
+    transition: color 0.3s ease;
 }
 
 a:hover {
-    text-decoration: none;
+    color: var(--sb-accent);
 }
 
-.navbar, footer {
-    background-color: #1a1a1a;
-    color: #ffffff;
-    box-shadow: none;
+/* Header */
+.navbar {
+    background-color: var(--sb-dark) !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
 }
 
-.navbar .nav-link {
-    color: #ffffff;
+.navbar .nav-link,
+.navbar-brand {
+    color: #ffffff !important;
 }
 
 .navbar .nav-link:hover {
-    color: #ff6600;
+    color: var(--sb-accent) !important;
 }
 
+/* Footer — ИСПРАВЛЕННЫЙ */
 footer {
-    padding: 20px 0;
-    text-align: center;
-    font-size: 0.9rem;
+    background-color: var(--sb-dark) !important;
+    color: #ffffff !important;
+    padding: 40px 0 20px;
+    margin-top: auto;
+    width: 100%;
+    border-top: 3px solid var(--sb-accent);
 }
 
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    text-align: center;
+}
+
+footer p {
+    margin-bottom: 10px;
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+footer strong {
+    color: var(--sb-accent);
+    font-weight: 600;
+}
+
+.footer-copyright {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+/* Buttons */
 .btn-primary {
-    background-color: #ff6600;
-    border-color: #ff6600;
-    transition: 0.3s;
+    background-color: var(--sb-accent);
+    border-color: var(--sb-accent);
+    transition: all 0.3s ease;
+    padding: 10px 24px;
+    font-weight: 600;
+    border-radius: 4px;
 }
 
 .btn-primary:hover {
     background-color: #e65c00;
     border-color: #e65c00;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
 }
 
+/* Cards */
 .card {
     background-color: #ffffff;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     transition: transform 0.3s, box-shadow 0.3s;
+    overflow: hidden;
+    margin-bottom: 25px;
 }
 
 .card:hover {
-    transform: translateY(-5px); /* Плавное поднятие карточки */
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* Более выраженная тень при наведении */
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
 }
 
 .card-img-top {
     object-fit: cover;
-    height: 200px;
+    height: 220px;
+    width: 100%;
 }
 
+.card-body {
+    padding: 1.5rem;
+}
+
+/* Layout */
 .container {
-    padding-top: 20px;
-    padding-bottom: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 20px;
 }
 
-/* Стили для блока "Про нас" */
+/* Sections */
+.section-title {
+    color: var(--sb-accent);
+    font-weight: 700;
+    margin-bottom: 2rem;
+    text-align: center;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background-color: var(--sb-accent);
+}
+
+/* About section */
 #about {
-    background-color: #f8f8f8; /* Легкий фон для выделения */
-    padding: 50px;
-    border-radius: 20px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Тень для выделения блока */
-    margin-top: 50px; /* Отступ сверху */
-    margin-bottom: 50px; /* Отступ снизу */
+    background-color: #ffffff;
+    padding: 60px 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    margin: 50px auto;
 }
 
 #about h2 {
-    color: #ff6600; /* Цвет заголовка */
+    color: var(--sb-accent);
     font-weight: 700;
 }
 
 #about p {
-    font-size: 1rem;
-    color: #666; /* Цвет текста */
+    font-size: 1.1rem;
+    color: #555;
+    line-height: 1.8;
 }
 
-#about .row {
-    margin-top: 20px;
-}
-
-#about .row .col-6 {
-    margin-bottom: 20px;
-}
-
-#about .btn {
-    background-color: #ff6600;
-    color: #fff;
-    font-weight: 500;
-    padding: 10px 20px;
-    border-radius: 5px;
-    transition: background-color 0.3s;
-}
-
-#about .btn:hover {
-    background-color: #e65c00; /* Цвет кнопки при наведении */
-}
-
-#about .d-flex {
-    display: flex;
-    align-items: center;
-}
-
-/* Стили для картинок в блоке "Про нас" */
 #about img {
-    border-radius: 10px;
+    border-radius: 12px;
     max-width: 100%;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
-/* Стиль для карточек товаров */
-.card {
-    border: none;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.card:hover {
-    transform: translateY(-5px); /* Плавное поднятие карточки */
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-}
-
-/* Стили для блока "Контакты" */
+/* Contacts */
 #contacts {
     background-color: #ffffff;
-    padding: 40px;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15); /* Легкая тень для контрастности */
+    padding: 50px 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    margin: 40px auto;
 }
 
 #contacts h2 {
-    color: #ff6600;
+    color: var(--sb-accent);
     font-weight: 700;
 }
 
 #contacts p {
-    font-size: 1rem;
+    font-size: 1.1rem;
     color: #333;
+    margin-bottom: 1.5rem;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .container {
+        padding: 25px 15px;
+    }
+    
+    #about, #contacts {
+        padding: 40px 25px;
+    }
 }
 
 @media (max-width: 767px) {
+    body {
+        padding-top: 60px;
+    }
+    
+    main {
+        padding-top: 60px;
+    }
+    
     .navbar .navbar-nav {
         text-align: center;
+        padding-top: 15px;
     }
-
+    
     .container {
-        padding-top: 20px;
-        padding-bottom: 20px;
+        padding: 20px 15px;
     }
-
+    
     .card-body {
-        padding: 1rem;
+        padding: 1.2rem;
     }
-
-    .btn-primary {
-        width: 100%;
+    
+    #about, #contacts {
+        padding: 30px 20px;
+        margin: 30px auto;
+    }
+    
+    footer {
+        padding: 30px 0 15px;
+    }
+    
+    .footer-content {
+        padding: 0 15px;
     }
 }
 
+@media (max-width: 576px) {
+    .section-title {
+        font-size: 1.8rem;
+    }
+    
+    #about p, #contacts p {
+        font-size: 1rem;
+    }
+    
+    .btn-primary {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}

@@ -1,6 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from db import get_db
 import json
+from datetime import datetime
+
+
 
 app = Flask(__name__)
 app.secret_key = "sbgear_secret_key"
@@ -13,6 +16,10 @@ def index():
     cur.execute("SELECT * FROM products LIMIT 6")
     products = cur.fetchall()
     return render_template("index.html", products=products)
+
+@app.context_processor
+def inject_now():
+    return {'current_year': datetime.now().year}
 
 
 @app.route("/catalog")
