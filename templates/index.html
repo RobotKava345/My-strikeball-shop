@@ -3,46 +3,359 @@
 {% block title %}SB Gear - Головна{% endblock %}
 
 {% block content %}
-<section id="about" class="mb-5">
-    <div class="row align-items-center">
-        <div class="col-md-6">
-            <img src="{{ url_for('static', filename='img/about-us.jpg') }}" class="img-fluid rounded shadow-sm" alt="Про нас">
-        </div>
-        <div class="col-md-6">
-            <h2 class="mb-3">Про SB Gear</h2>
-            <p>SB Gear — це сучасний інтернет-магазин, який спеціалізується на високоякісному спорядженні та аксесуарах для активного способу життя. Ми об'єднуємо найновіші технології та стильний дизайн, щоб забезпечити нашим клієнтам тільки найкраще.</p>
-            <p>Наша команда професіоналів завжди готова допомогти обрати необхідний товар та надати консультації щодо використання та догляду. Ми прагнемо створити зручний та безпечний досвід покупки для кожного відвідувача.</p>
-            <p>Досвід, надійність та увага до деталей — ось що відрізняє SB Gear від інших магазинів. Приєднуйтесь до нашої спільноти і відкрийте для себе нові можливості з нашим спорядженням!</p>
+
+<section class="hero mb-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="display-4 fw-bold mb-3">Професійне страйкбольне спорядження</h1>
+                <p class="lead mb-4">Високоякісне обладнання для гравців будь-якого рівня. Від новачків до професіоналів.</p>
+                <a href="{{ url_for('catalog_page') }}" class="btn btn-primary btn-lg">Перейти до каталогу</a>
+            </div>
+            <div class="col-md-6">
+                <img src="{{ url_for('static', filename='img/hero.jpg') }}" class="img-fluid rounded shadow" alt="SB Gear">
+            </div>
         </div>
     </div>
 </section>
 
-<h1 class="mb-4">Популярні товари</h1>
-<div class="row row-cols-1 row-cols-md-3 g-4">
-    {% for product in products %}
-    <div class="col">
-        <div class="card h-100">
-            <img src="{{ url_for('static', filename='img/' + (product['image'] or 'placeholder.png')) }}" class="card-img-top" alt="{{ product['name'] }}">
-            <div class="card-body d-flex flex-column">
-                <h5 class="card-title">{{ product['name'] }}</h5>
-                <p class="card-text">{{ product['description'][:100] }}{% if product['description']|length > 100 %}...{% endif %}</p>
-                <div class="mt-auto d-flex justify-content-between align-items-center">
-                    <span class="fw-bold">{{ product['price'] }} ₴</span>
-                    <a href="{{ url_for('add_to_cart', product_id=product['id']) }}" class="btn btn-primary btn-sm">Додати в кошик</a>
+
+<section id="about" class="py-5 bg-light mb-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Про компанію SB Gear</h2>
+        <div class="row">
+            <div class="col-md-6">
+                <img src="{{ url_for('static', filename='img/about.jpg') }}" class="img-fluid rounded shadow" alt="Про нас">
+            </div>
+            <div class="col-md-6">
+                <h3 class="mb-4">Наша місія</h3>
+                <p class="mb-3">SB Gear - це інтернет-магазин професійного страйкбольного спорядження. Ми пропонуємо тільки якісне обладнання від провідних виробників.</p>
+                <p class="mb-3">Наша місія - забезпечити гравців надійним спорядженням для безпечної та захоплюючої гри. Ми розуміємо, що від якості обладнання залежить не тільки результат гри, але й безпека кожного гравця.</p>
+                <p class="mb-4">Ми працюємо з 2015 року та за цей час заслужили довіру тисяч клієнтів по всій Україні.</p>
+                
+                <div class="row text-center">
+                    <div class="col-4">
+                        <div class="display-6 text-primary fw-bold">8+</div>
+                        <div class="small">років досвіду</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="display-6 text-primary fw-bold">500+</div>
+                        <div class="small">товарів</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="display-6 text-primary fw-bold">100%</div>
+                        <div class="small">якість</div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    {% endfor %}
-</div>
-
-<hr class="my-5">
-
-<section id="contacts">
-    <h2 class="mb-4">Контакти</h2>
-    <p><strong>Телефон:</strong> +38 (XXX) XXX-XX-XX</p>
-    <p><strong>Email:</strong> info@sbgear.ua</p>
-    <p><strong>Адреса:</strong> м. Київ, вул. Страйкбольна, 1</p>
-    <p>Ми завжди раді вашим запитанням та пропозиціям!</p>
 </section>
+
+<section class="features mb-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Чому обирають нас</h2>
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="card h-100 border-0 text-center">
+                    <div class="card-body">
+                        <div class="feature-icon mb-3">
+                            <i class="bi bi-shield-check text-primary display-4"></i>
+                        </div>
+                        <h5>Гарантія якості</h5>
+                        <p class="text-muted">Тільки сертифікована продукція від офіційних виробників</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card h-100 border-0 text-center">
+                    <div class="card-body">
+                        <div class="feature-icon mb-3">
+                            <i class="bi bi-truck text-primary display-4"></i>
+                        </div>
+                        <h5>Швидка доставка</h5>
+                        <p class="text-muted">Доставка по всій Україні протягом 1-3 днів</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card h-100 border-0 text-center">
+                    <div class="card-body">
+                        <div class="feature-icon mb-3">
+                            <i class="bi bi-headset text-primary display-4"></i>
+                        </div>
+                        <h5>Підтримка 24/7</h5>
+                        <p class="text-muted">Консультації та підбір обладнання</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card h-100 border-0 text-center">
+                    <div class="card-body">
+                        <div class="feature-icon mb-3">
+                            <i class="bi bi-arrow-repeat text-primary display-4"></i>
+                        </div>
+                        <h5>Повернення</h5>
+                        <p class="text-muted">Зручне повернення протягом 14 днів</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="featured-products mb-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Популярні товари</h2>
+            <a href="{{ url_for('catalog_page') }}" class="btn btn-outline-primary">Весь каталог</a>
+        </div>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for product in products %}
+            <div class="col">
+                <div class="card h-100 product-card">
+                    <a href="{{ url_for('product_page', product_id=product['id']) }}">
+                        <img src="{{ url_for('static', filename='img/' + (product['image'] or 'placeholder.png')) }}" 
+                             class="card-img-top" 
+                             alt="{{ product['name'] }}"
+                             style="height: 250px; object-fit: cover;">
+                    </a>
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a href="{{ url_for('product_page', product_id=product['id']) }}" 
+                               class="text-decoration-none text-dark">
+                                {{ product['name'] }}
+                            </a>
+                        </h5>
+                        <p class="card-text text-muted small mb-3">{{ product['description'][:100] }}{% if product['description']|length > 100 %}...{% endif %}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold text-primary h5 mb-0">{{ product['price'] }} ₴</span>
+                            <a href="{{ url_for('add_to_cart', product_id=product['id']) }}" 
+                               class="btn btn-primary">Додати в кошик</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+
+<section class="categories mb-5 bg-light py-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Категорії товарів</h2>
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="card category-card">
+                    <a href="{{ url_for('catalog_page') }}" class="text-decoration-none text-dark">
+                        <img src="{{ url_for('static', filename='img/category-pistols.jpg') }}" class="card-img-top" alt="Пістолети">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Пістолети</h5>
+                            <p class="text-muted small">Електричні та газові</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card category-card">
+                    <a href="{{ url_for('catalog_page') }}" class="text-decoration-none text-dark">
+                        <img src="{{ url_for('static', filename='img/category-rifles.jpg') }}" class="card-img-top" alt="Гвинтівки">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Гвинтівки</h5>
+                            <p class="text-muted small">AEG, снайперські</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card category-card">
+                    <a href="{{ url_for('catalog_page') }}" class="text-decoration-none text-dark">
+                        <img src="{{ url_for('static', filename='img/category-protection.jpg') }}" class="card-img-top" alt="Захист">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Захист</h5>
+                            <p class="text-muted small">Окуляри, маски</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card category-card">
+                    <a href="{{ url_for('catalog_page') }}" class="text-decoration-none text-dark">
+                        <img src="{{ url_for('static', filename='img/category-ammo.jpg') }}" class="card-img-top" alt="Амуніція">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Амуніція</h5>
+                            <p class="text-muted small">Кульки, магазини</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section id="contacts" class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Контакти</h2>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h4 class="mb-4"><i class="bi bi-geo-alt text-primary me-2"></i>Наша адреса</h4>
+                        <p class="mb-3"><strong>SB Gear Store</strong></p>
+                        <p class="mb-4">м. Київ, вул. Страйсбольна, 1<br>Бізнес-центр "Страйкбол"</p>
+                        
+                        <h5 class="mb-3"><i class="bi bi-clock text-primary me-2"></i>Графік роботи</h5>
+                        <p>Понеділок - П'ятниця: 9:00 - 18:00</p>
+                        <p>Субота: 10:00 - 16:00</p>
+                        <p>Неділя: вихідний</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h4 class="mb-4"><i class="bi bi-telephone text-primary me-2"></i>Зв'язатися з нами</h4>
+                        
+                        <div class="mb-4">
+                            <h5>Email</h5>
+                            <p><i class="bi bi-envelope me-2"></i>info@sbgear.ua</p>
+                            <p><i class="bi bi-envelope me-2"></i>sales@sbgear.ua</p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h5>Телефони</h5>
+                            <p><i class="bi bi-phone me-2"></i>+38 (044) 123-45-67</p>
+                            <p><i class="bi bi-phone me-2"></i>+38 (067) 123-45-67</p>
+                            <p><i class="bi bi-whatsapp me-2"></i>+38 (050) 123-45-67 (Viber/WhatsApp)</p>
+                        </div>
+                        
+                        <div>
+                            <h5>Соціальні мережі</h5>
+                            <div class="d-flex gap-3 mt-3">
+                                <a href="#" class="text-decoration-none">
+                                    <i class="bi bi-facebook fs-4 text-primary"></i>
+                                </a>
+                                <a href="#" class="text-decoration-none">
+                                    <i class="bi bi-instagram fs-4 text-danger"></i>
+                                </a>
+                                <a href="#" class="text-decoration-none">
+                                    <i class="bi bi-telegram fs-4 text-info"></i>
+                                </a>
+                                <a href="#" class="text-decoration-none">
+                                    <i class="bi bi-youtube fs-4 text-danger"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="mt-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="mb-3"><i class="bi bi-map text-primary me-2"></i>Ми на карті</h5>
+                    <div class="ratio ratio-16x9">
+                        <iframe 
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2540.0!2d30.5!3d50.4!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNTDCsDI0JzAwLjAiTiAzMMKwMzAnMDAuMCJF!5e0!3m2!1suk!2sua!4v1620000000000!5m2!1suk!2sua" 
+                            style="border:0;" 
+                            allowfullscreen="" 
+                            loading="lazy">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .hero {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 4rem 0;
+    }
+    
+    .product-card {
+        transition: transform 0.3s, box-shadow 0.3s;
+        border: 1px solid #e0e0e0;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        border-color: var(--sb-accent);
+    }
+    
+    .category-card {
+        transition: transform 0.3s;
+        height: 100%;
+    }
+    
+    .category-card:hover {
+        transform: scale(1.05);
+    }
+    
+    .category-card img {
+        height: 200px;
+        object-fit: cover;
+    }
+    
+    .feature-icon {
+        height: 80px;
+        width: 80px;
+        background: rgba(255, 102, 0, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+    }
+    
+    #contacts .card {
+        border: none;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+    
+    #contacts .card:hover {
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        const counters = document.querySelectorAll('.display-6');
+        counters.forEach(counter => {
+            const target = parseInt(counter.textContent);
+            let current = 0;
+            const increment = target / 50;
+            
+            const updateCounter = () => {
+                if (current < target) {
+                    current += increment;
+                    counter.textContent = Math.ceil(current) + (counter.textContent.includes('+') ? '+' : '');
+                    setTimeout(updateCounter, 30);
+                } else {
+                    counter.textContent = target + (counter.textContent.includes('+') ? '+' : '');
+                }
+            };
+            
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        updateCounter();
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+            
+            observer.observe(counter.parentElement.parentElement);
+        });
+    });
+</script>
 {% endblock %}

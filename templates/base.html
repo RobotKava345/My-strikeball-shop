@@ -1,51 +1,323 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="uk" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}SB Gear{% endblock %}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+    
+    {% block extra_css %}{% endblock %}
+    
+    <meta name="description" content="{% block meta_description %}SB Gear - магазин професійного страйкбольного спорядження{% endblock %}">
 </head>
-<body>
+<body class="theme-transition">
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
-        <a class="navbar-brand" href="{{ url_for('index') }}">SB Gear</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('index') }}">Головна</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('catalog_page') }}">Каталог</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('cart') }}">Кошик</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('order') }}">Оформити замовлення</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('index') }}#contacts">Контакти</a>
-                </li>
-            </ul>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="bi bi-bullseye me-2"></i>SB Gear
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">
+                            <i class="bi bi-house d-lg-none me-2"></i>Головна
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('catalog_page') }}">
+                            <i class="bi bi-grid d-lg-none me-2"></i>Каталог
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('contacts') }}">
+                            <i class="bi bi-telephone d-lg-none me-2"></i>Контакти
+                        </a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown me-2">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-palette"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <button class="dropdown-item theme-toggle" data-theme="light">
+                                    <i class="bi bi-sun me-2"></i>Світла
+                                </button>
+                            </li>
+                            <li>
+                                <button class="dropdown-item theme-toggle" data-theme="dark">
+                                    <i class="bi bi-moon me-2"></i>Темна
+                                </button>
+                            </li>
+                            <li>
+                                <button class="dropdown-item theme-toggle" data-theme="auto">
+                                    <i class="bi bi-circle-half me-2"></i>Авто
+                                </button>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    <li class="nav-item dropdown me-3">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Мій профіль</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-heart me-2"></i>Збережені</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-box-seam me-2"></i>Мої замовлення</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-cart3"></i>
+                            <span class="cart-count">{{ cart_count }}</span>
+                            <span class="cart-badge badge bg-primary rounded-pill ms-1">
+                                {{ cart_count if cart_count > 0 }}
+                            </span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end mini-cart-dropdown" style="min-width: 320px;">
+                            <div class="mini-cart px-3 py-2">
+                                {% if cart_count > 0 %}
+                                    <div class="mini-cart-items">
+                                        {% for item in session.get('cart', {}) %}
+                                        <div class="mini-cart-item">
+                                            <div class="d-flex align-items-center">
+                                                <img src="{{ url_for('static', filename='img/placeholder.png') }}" 
+                                                     alt="Товар" 
+                                                     class="mini-cart-img">
+                                                <div class="ms-2">
+                                                    <div class="mini-cart-title">Товар {{ item }}</div>
+                                                    <div class="mini-cart-price">1 × 0 ₴</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="mini-cart-total">
+                                        <div class="d-flex justify-content-between">
+                                            <strong>Всього:</strong>
+                                            <strong>0 ₴</strong>
+                                        </div>
+                                        <div class="d-grid gap-2 mt-2">
+                                            <a href="{{ url_for('cart') }}" class="btn btn-primary btn-sm">
+                                                <i class="bi bi-cart-check me-1"></i>Перейти до кошика
+                                            </a>
+                                            <a href="{{ url_for('order') }}" class="btn btn-outline-primary btn-sm">
+                                                <i class="bi bi-bag-check me-1"></i>Оформити замовлення
+                                            </a>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="text-center py-4">
+                                        <i class="bi bi-cart-x display-6 text-muted mb-3"></i>
+                                        <p class="text-muted mb-3">Кошик порожній</p>
+                                        <a href="{{ url_for('catalog_page') }}" class="btn btn-primary btn-sm">
+                                            <i class="bi bi-bag me-1"></i>Перейти до покупок
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
 
 
-<div class="container mt-4 vh-100">
-    {% block content %}{% endblock %}
-</div>
+    <footer class="bg-dark text-white py-5 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5 class="mb-3">
+                        <i class="bi bi-bullseye me-2"></i>SB Gear
+                    </h5>
+                    <p class="mb-3 opacity-75">Магазин професійного страйкбольного спорядження. Якість, надійність, безпека.</p>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-white opacity-75 hover-lift">
+                            <i class="bi bi-facebook fs-5"></i>
+                        </a>
+                        <a href="#" class="text-white opacity-75 hover-lift">
+                            <i class="bi bi-instagram fs-5"></i>
+                        </a>
+                        <a href="#" class="text-white opacity-75 hover-lift">
+                            <i class="bi bi-telegram fs-5"></i>
+                        </a>
+                        <a href="#" class="text-white opacity-75 hover-lift">
+                            <i class="bi bi-youtube fs-5"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 mb-4">
+                    <h5 class="mb-3">Контакти</h5>
+                    <div class="d-flex align-items-start mb-2">
+                        <i class="bi bi-geo-alt me-2 mt-1"></i>
+                        <span class="opacity-75">м. Київ, вул. Страйсбольна, 1</span>
+                    </div>
+                    <div class="d-flex align-items-start mb-2">
+                        <i class="bi bi-telephone me-2 mt-1"></i>
+                        <span class="opacity-75">+38 (044) 123-45-67</span>
+                    </div>
+                    <div class="d-flex align-items-start mb-2">
+                        <i class="bi bi-envelope me-2 mt-1"></i>
+                        <span class="opacity-75">info@sbgear.ua</span>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 mb-4">
+                    <h5 class="mb-3">Графік роботи</h5>
+                    <p class="mb-2 opacity-75">Пн-Пт: 9:00 - 18:00</p>
+                    <p class="mb-2 opacity-75">Сб: 10:00 - 16:00</p>
+                    <p class="opacity-75">Нд: вихідний</p>
+                </div>
+            </div>
+            
+            <hr class="my-4" style="border-color: rgba(255,255,255,0.1);">
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-0 opacity-75">&copy; {{ current_year }} SB Gear. Всі права захищені.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="text-white text-decoration-none me-3 opacity-75 hover-lift">Політика конфіденційності</a>
+                    <a href="#" class="text-white text-decoration-none opacity-75 hover-lift">Умови використання</a>
+                </div>
+            </div>
+        </div>
+    </footer>
 
-<footer class="bg-dark text-white mt-5 p-4 text-center">
-    &copy; {{ current_year }} SB Gear. Всі права захищені.
-</footer>
+    <!-- Кнопка наверх -->
+    <button class="btn btn-primary btn-back-to-top" style="display: none;">
+        <i class="bi bi-chevron-up"></i>
+    </button>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Кнопка наверх
+            const backToTopButton = document.querySelector('.btn-back-to-top');
+            
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 300) {
+                    backToTopButton.style.display = 'block';
+                } else {
+                    backToTopButton.style.display = 'none';
+                }
+            });
+            
+            backToTopButton.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+            
+            // Инициализация темы
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme === 'auto') {
+                document.documentElement.setAttribute('data-bs-theme', prefersDark ? 'dark' : 'light');
+                document.querySelector('.theme-toggle[data-theme="auto"]').classList.add('active');
+            } else {
+                document.documentElement.setAttribute('data-bs-theme', savedTheme);
+                document.querySelector(`.theme-toggle[data-theme="${savedTheme}"]`).classList.add('active');
+            }
+            
+            // Переключение темы
+            document.querySelectorAll('.theme-toggle').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const theme = this.dataset.theme;
+                    localStorage.setItem('theme', theme);
+                    
+                    document.querySelectorAll('.theme-toggle').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    if (theme === 'auto') {
+                        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                        document.documentElement.setAttribute('data-bs-theme', prefersDark ? 'dark' : 'light');
+                        showNotification('Тема змінена на Авто', 'success', 2000);
+                    } else {
+                        document.documentElement.setAttribute('data-bs-theme', theme);
+                        const themeNames = { light: 'Світла', dark: 'Темна' };
+                        showNotification(`Тема змінена на ${themeNames[theme]}`, 'success', 2000);
+                    }
+                });
+            });
+            
+            // Следим за изменением системной темы
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+                if (localStorage.getItem('theme') === 'auto') {
+                    document.documentElement.setAttribute('data-bs-theme', e.matches ? 'dark' : 'light');
+                }
+            });
+            
+            // Функция уведомлений
+            function showNotification(message, type = 'info', duration = 3000) {
+                const container = document.createElement('div');
+                container.className = 'notification-container';
+                document.body.appendChild(container);
+                
+                const notification = document.createElement('div');
+                notification.className = `notification notification-${type}`;
+                notification.innerHTML = `
+                    <div class="notification-content">
+                        <i class="bi ${type === 'success' ? 'bi-check-circle' : type === 'error' ? 'bi-exclamation-circle' : 'bi-info-circle'} me-2"></i>
+                        ${message}
+                    </div>
+                    <button class="notification-close">
+                        <i class="bi bi-x"></i>
+                    </button>
+                `;
+                
+                container.appendChild(notification);
+                
+                setTimeout(() => notification.classList.add('show'), 10);
+                
+                notification.querySelector('.notification-close').addEventListener('click', () => {
+                    notification.classList.remove('show');
+                    setTimeout(() => notification.remove(), 300);
+                });
+                
+                if (duration > 0) {
+                    setTimeout(() => {
+                        notification.classList.remove('show');
+                        setTimeout(() => notification.remove(), 300);
+                    }, duration);
+                }
+            }
+            
+            // Глобальная функция для использования в других скриптах
+            window.showNotification = showNotification;
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

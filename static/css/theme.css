@@ -1,0 +1,244 @@
+/* Темная тема */
+[data-bs-theme="dark"] {
+    --sb-dark: #0a0a0a;
+    --sb-accent: #ff8c42;
+    --sb-light: #1a1a1a;
+    --sb-text: #f0f0f0;
+    --bs-body-bg: #121212;
+    --bs-body-color: #f0f0f0;
+    --bs-secondary: #6c757d;
+    --bs-light: #2d2d2d;
+    --bs-dark: #0a0a0a;
+    --bs-border-color: #444;
+}
+
+[data-bs-theme="dark"] body {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+}
+
+[data-bs-theme="dark"] .navbar {
+    background-color: var(--sb-dark) !important;
+}
+
+[data-bs-theme="dark"] .navbar-scrolled {
+    background-color: rgba(10, 10, 10, 0.95) !important;
+}
+
+[data-bs-theme="dark"] .card {
+    background-color: #1e1e1e;
+    border-color: #444;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-bs-theme="dark"] .card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+[data-bs-theme="dark"] .product-card {
+    border-color: #444;
+}
+
+[data-bs-theme="dark"] .product-card:hover {
+    border-color: var(--sb-accent);
+}
+
+[data-bs-theme="dark"] .table {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--bs-body-color);
+    --bs-table-border-color: #444;
+}
+
+[data-bs-theme="dark"] .table-light {
+    --bs-table-bg: #2d2d2d;
+    --bs-table-color: var(--bs-body-color);
+}
+
+[data-bs-theme="dark"] .table-hover tbody tr:hover {
+    background-color: rgba(255, 140, 66, 0.1);
+}
+
+[data-bs-theme="dark"] .btn-outline-secondary {
+    color: #ccc;
+    border-color: #666;
+}
+
+[data-bs-theme="dark"] .btn-outline-secondary:hover {
+    background-color: #666;
+    border-color: #666;
+    color: white;
+}
+
+[data-bs-theme="dark"] .form-control,
+[data-bs-theme="dark"] .form-select {
+    background-color: #2d2d2d;
+    border-color: #444;
+    color: var(--bs-body-color);
+}
+
+[data-bs-theme="dark"] .form-control:focus,
+[data-bs-theme="dark"] .form-select:focus {
+    background-color: #333;
+    border-color: var(--sb-accent);
+    color: var(--bs-body-color);
+}
+
+[data-bs-theme="dark"] .breadcrumb {
+    --bs-breadcrumb-divider-color: #666;
+    --bs-breadcrumb-item-active-color: #ccc;
+}
+
+[data-bs-theme="dark"] .breadcrumb-item a {
+    color: var(--sb-accent);
+}
+
+[data-bs-theme="dark"] .alert-info {
+    background-color: rgba(255, 140, 66, 0.1);
+    border-color: rgba(255, 140, 66, 0.3);
+    color: #ffccaa;
+}
+
+[data-bs-theme="dark"] .alert-success {
+    background-color: rgba(40, 167, 69, 0.1);
+    border-color: rgba(40, 167, 69, 0.3);
+    color: #a3d9b1;
+}
+
+[data-bs-theme="dark"] .alert-warning {
+    background-color: rgba(255, 193, 7, 0.1);
+    border-color: rgba(255, 193, 7, 0.3);
+    color: #ffeaa7;
+}
+
+[data-bs-theme="dark"] .text-muted {
+    color: #aaa !important;
+}
+
+[data-bs-theme="dark"] .dropdown-menu {
+    background-color: #2d2d2d;
+    border-color: #444;
+}
+
+[data-bs-theme="dark"] .dropdown-item {
+    color: #f0f0f0;
+}
+
+[data-bs-theme="dark"] .dropdown-item:hover {
+    background-color: rgba(255, 140, 66, 0.1);
+    color: var(--sb-accent);
+}
+
+[data-bs-theme="dark"] .list-group-item {
+    background-color: #1e1e1e;
+    border-color: #444;
+    color: var(--bs-body-color);
+}
+
+[data-bs-theme="dark"] .list-group-item.active {
+    background-color: var(--sb-accent);
+    border-color: var(--sb-accent);
+}
+
+[data-bs-theme="dark"] .modal-content {
+    background-color: #2d2d2d;
+    color: var(--bs-body-color);
+}
+
+[data-bs-theme="dark"] .modal-header,
+[data-bs-theme="dark"] .modal-footer {
+    border-color: #444;
+}
+
+[data-bs-theme="dark"] .notification {
+    background-color: #2d2d2d;
+    color: var(--bs-body-color);
+    border-left-color: var(--sb-accent);
+}
+
+[data-bs-theme="dark"] .loading-overlay {
+    background: rgba(18, 18, 18, 0.8);
+}
+
+[data-bs-theme="dark"] .mini-cart {
+    background-color: #2d2d2d;
+}
+
+[data-bs-theme="dark"] .mini-cart-item {
+    border-bottom-color: #444;
+}
+
+[data-bs-theme="dark"] .mini-cart-total {
+    border-top-color: #444;
+}
+
+[data-bs-theme="dark"] .input-group-text {
+    background-color: #333;
+    border-color: #444;
+    color: #ccc;
+}
+
+[data-bs-theme="dark"] hr {
+    border-color: #444;
+}
+
+[data-bs-theme="dark"] .btn-light {
+    background-color: #333;
+    border-color: #444;
+    color: #f0f0f0;
+}
+
+[data-bs-theme="dark"] .btn-light:hover {
+    background-color: #444;
+    border-color: #555;
+    color: white;
+}
+
+[data-bs-theme="dark"] .accordion-button {
+    background-color: #1e1e1e;
+    color: var(--bs-body-color);
+}
+
+[data-bs-theme="dark"] .accordion-button:not(.collapsed) {
+    background-color: var(--sb-accent);
+    color: white;
+}
+
+[data-bs-theme="dark"] .accordion-body {
+    background-color: #2d2d2d;
+}
+
+[data-bs-theme="dark"] .bg-light {
+    background-color: #2d2d2d !important;
+}
+
+[data-bs-theme="dark"] .text-dark {
+    color: #f0f0f0 !important;
+}
+
+[data-bs-theme="dark"] a.text-dark:hover {
+    color: var(--sb-accent) !important;
+}
+
+[data-bs-theme="dark"] .border {
+    border-color: #444 !important;
+}
+
+[data-bs-theme="dark"] .border-light {
+    border-color: #666 !important;
+}
+
+[data-bs-theme="dark"] .bg-white {
+    background-color: #1e1e1e !important;
+}
+
+[data-bs-theme="dark"] .text-white {
+    color: #f0f0f0 !important;
+}
+
+[data-bs-theme="dark"] footer {
+    background-color: #0a0a0a !important;
+}
+
+[data-bs-theme="dark"] .hero-section {
+    background: linear-gradient(135deg, rgba(10,10,10,0.9) 0%, rgba(255,140,66,0.8) 100%);
+}

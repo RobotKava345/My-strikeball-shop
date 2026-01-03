@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}SB Gear - Помилка сервера{% endblock %}
+
+{% block content %}
+<div class="container text-center py-5">
+    <h1 class="display-1 text-muted">500</h1>
+    <h2 class="mb-4">Помилка сервера</h2>
+    <p class="lead mb-4">Сталася внутрішня помилка сервера. Спробуйте пізніше.</p>
+    <div class="d-flex justify-content-center gap-3">
+        <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg">
+            <i class="bi bi-house me-2"></i>На головну
+        </a>
+        <a href="{{ url_for('catalog_page') }}" class="btn btn-outline-primary btn-lg">
+            <i class="bi bi-bag me-2"></i>До каталогу
+        </a>
+    </div>
+</div>
+{% endblock %}

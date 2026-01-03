@@ -1,27 +1,616 @@
 {% extends "base.html" %}
 
-{% block title %}SB Gear - {{ product['name'] }}{% endblock %}
+{% block title %}{{ product['name'] }} - SB Gear{% endblock %}
+{% block meta_description %}{{ product['description'][:160] }}{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-6">
-        <img src="{{ url_for('static', filename='img/' + (product['image'] or 'placeholder.png')) }}" class="img-fluid" alt="{{ product['name'] }}">
-    </div>
-    <div class="col-md-6">
-        <h1>{{ product['name'] }}</h1>
-        <p class="fw-bold fs-4">{{ product['price'] }} ₴</p>
-        <p>{{ product['description'] }}</p>
-        {% if product['specs'] %}
-        <h5>Характеристики:</h5>
-        <ul>
-            {% import "json" as json %}
-            {% set specs = product['specs']|tojson %}
-            {% for key, value in specs.items() %}
-            <li><strong>{{ key }}:</strong> {{ value }}</li>
-            {% endfor %}
-        </ul>
+
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Головна</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('catalog_page') }}">Каталог</a></li>
+        
+        {% if parent_category %}
+            <li class="breadcrumb-item">
+                <a href="{{ url_for('catalog_page', category_id=parent_category['id']) }}">
+                    {{ parent_category['name'] }}
+                </a>
+            </li>
         {% endif %}
-        <a href="{{ url_for('add_to_cart', product_id=product['id']) }}" class="btn btn-primary mt-3">Додати в кошик</a>
+        
+        {% if category %}
+            <li class="breadcrumb-item">
+                <a href="{{ url_for('catalog_page', category_id=category['id']) }}">
+                    {{ category['name'] }}
+                </a>
+            </li>
+        {% endif %}
+        
+        <li class="breadcrumb-item active" aria-current="page">{{ product['name'] }}</li>
+    </ol>
+</nav>
+
+<div class="row">
+
+    <div class="col-lg-8">
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="col-md-6">
+                        <div class="product-gallery">
+                            <div class="main-image mb-3">
+                                <img src="{{ url_for('static', filename='img/' + (product['image'] or 'placeholder.png')) }}" 
+                                     class="img-fluid rounded" 
+                                     alt="{{ product['name'] }}"
+                                     id="mainProductImage"
+                                     style="cursor: zoom-in;">
+                            </div>
+                            
+                            {% if product.get('images') %}
+                                <div class="thumbnails d-flex gap-2">
+                                    {% for img in product['images'].split(',') %}
+                                        <img src="{{ url_for('static', filename='img/' + img) }}" 
+                                             class="img-thumbnail" 
+                                             style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;"
+                                             onclick="document.getElementById('mainProductImage').src = this.src">
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+
+                    <div class="col-md-6">
+
+                        <h1 class="h2 mb-2">{{ product['name'] }}</h1>
+                        
+
+                        <div class="mb-3">
+                            <span class="text-muted">Артикул:</span>
+                            <span class="badge bg-secondary ms-2">{{ product['article'] or 'SBG-' ~ product['id'] }}</span>
+                        </div>
+                        
+
+                        <div class="mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="rating">
+                                    {% for i in range(5) %}
+                                        {% if i < avg_rating|round %}
+                                            <i class="bi bi-star-fill text-warning"></i>
+                                        {% else %}
+                                            <i class="bi bi-star text-warning"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <span class="ms-2">{{ "%.1f"|format(avg_rating) }} / 5.0</span>
+                                {% if reviews %}
+                                    <a href="#reviews" class="ms-2">({{ reviews|length }} відгуків)</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+
+                        <div class="mb-4">
+                            <h2 class="text-primary display-6">{{ product['price'] }} ₴</h2>
+                            {% if product.get('old_price') and product['old_price'] > product['price'] %}
+                                <div class="d-flex align-items-center">
+                                    <span class="text-decoration-line-through text-muted me-3">{{ product['old_price'] }} ₴</span>
+                                    <span class="badge bg-danger">
+                                        -{{ ((product['old_price'] - product['price']) / product['old_price'] * 100)|round }}%
+                                    </span>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="alert alert-success mb-4">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-check-circle-fill me-2"></i>
+                                <div>
+                                    <strong>В наявності</strong>
+                                    <div class="small">Доставка 1-3 дні</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+
+                        {% if product.get('options') %}
+                            <div class="mb-4">
+                                <h5 class="mb-3">Варіанти:</h5>
+                                <div class="d-flex flex-wrap gap-2">
+                                    {% for option in product['options'].split(',') %}
+                                        <button type="button" class="btn btn-outline-primary">{{ option }}</button>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                        
+
+                        <div class="mb-4">
+                            <div class="d-grid gap-2">
+                                <a href="{{ url_for('add_to_cart', product_id=product['id']) }}" 
+                                   class="btn btn-primary btn-lg">
+                                    <i class="bi bi-cart-plus"></i> Купити
+                                </a>
+                                
+                                <div class="d-flex gap-2">
+                                    <a href="{{ url_for('add_to_cart', product_id=product['id']) }}" 
+                                       class="btn btn-outline-primary flex-grow-1">
+                                        Купити в 1 клік
+                                    </a>
+                                    <button class="btn btn-outline-secondary">
+                                        <i class="bi bi-heart"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="border-top pt-3">
+                            <div class="row small text-center">
+                                <div class="col-4">
+                                    <i class="bi bi-shield-check text-primary d-block fs-4"></i>
+                                    <span>Гарантія</span>
+                                </div>
+                                <div class="col-4">
+                                    <i class="bi bi-truck text-primary d-block fs-4"></i>
+                                    <span>Доставка</span>
+                                </div>
+                                <div class="col-4">
+                                    <i class="bi bi-arrow-repeat text-primary d-block fs-4"></i>
+                                    <span>Повернення</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h4 class="mb-0">Переваги товару</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="d-flex mb-3">
+                            <i class="bi bi-check-circle-fill text-success me-3 fs-5"></i>
+                            <div>
+                                <strong>Висока якість</strong>
+                                <p class="text-muted small mb-0">Виготовлено з міцних матеріалів</p>
+                            </div>
+                        </div>
+                        <div class="d-flex mb-3">
+                            <i class="bi bi-check-circle-fill text-success me-3 fs-5"></i>
+                            <div>
+                                <strong>Професійне обладнання</strong>
+                                <p class="text-muted small mb-0">Підходить для турнірів та тренувань</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex mb-3">
+                            <i class="bi bi-check-circle-fill text-success me-3 fs-5"></i>
+                            <div>
+                                <strong>Безпека</strong>
+                                <p class="text-muted small mb-0">Відповідає стандартам безпеки</p>
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            <i class="bi bi-check-circle-fill text-success me-3 fs-5"></i>
+                            <div>
+                                <strong>Офіційний дистриб'ютор</strong>
+                                <p class="text-muted small mb-0">Гарантія від виробника</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="productTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab">
+                            Опис
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specs" type="button" role="tab">
+                            Характеристики
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews" type="button" role="tab">
+                            Відгуки ({{ reviews|length }})
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="delivery-tab" data-bs-toggle="tab" data-bs-target="#delivery" type="button" role="tab">
+                            Доставка
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="productTabsContent">
+
+                    <div class="tab-pane fade show active" id="description" role="tabpanel">
+                        <h5>Детальний опис</h5>
+                        <p>{{ product['description'] }}</p>
+                        
+                        <h6 class="mt-4">Для кого цей товар:</h6>
+                        <ul>
+                            <li>Для професійних гравців у страйкбол</li>
+                            <li>Для любителів активного відпочинку</li>
+                            <li>Для тренувань та турнірів</li>
+                            <li>Для колекціонерів спорядження</li>
+                        </ul>
+                    </div>
+                    
+
+                    <div class="tab-pane fade" id="specs" role="tabpanel">
+                        <table class="table table-striped">
+                            <tbody>
+                                {% if product['manufacturer'] %}
+                                    <tr>
+                                        <th style="width: 40%">Виробник</th>
+                                        <td>{{ product['manufacturer'] }}</td>
+                                    </tr>
+                                {% endif %}
+                                
+                                {% if product['material'] %}
+                                    <tr>
+                                        <th>Матеріал</th>
+                                        <td>{{ product['material'] }}</td>
+                                    </tr>
+                                {% endif %}
+                                
+                                {% if product['weight'] %}
+                                    <tr>
+                                        <th>Вага</th>
+                                        <td>{{ product['weight'] }} г</td>
+                                    </tr>
+                                {% endif %}
+                                
+                                {% if product['dimensions'] %}
+                                    <tr>
+                                        <th>Розміри</th>
+                                        <td>{{ product['dimensions'] }}</td>
+                                    </tr>
+                                {% endif %}
+                                
+                                {% if product['color'] %}
+                                    <tr>
+                                        <th>Колір</th>
+                                        <td>{{ product['color'] }}</td>
+                                    </tr>
+                                {% endif %}
+                                
+                                <tr>
+                                    <th>Країна виробник</th>
+                                    <td>Україна / Тайвань</td>
+                                </tr>
+                                
+                                <tr>
+                                    <th>Гарантія</th>
+                                    <td>12 місяців</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+
+                    <div class="tab-pane fade" id="reviews" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                                <h5 class="mb-0">Відгуки покупців</h5>
+                                <div class="d-flex align-items-center">
+                                    <div class="rating fs-5">
+                                        {% for i in range(5) %}
+                                            {% if i < avg_rating|round %}
+                                                <i class="bi bi-star-fill text-warning"></i>
+                                            {% else %}
+                                                <i class="bi bi-star text-warning"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <span class="ms-2">{{ "%.1f"|format(avg_rating) }} з 5 ({{ reviews|length }} відгуків)</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {% if reviews %}
+                            {% for review in reviews %}
+                                <div class="border-bottom pb-3 mb-3">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <div>
+                                            <strong>{{ review['name'] }}</strong>
+                                            <div class="rating small">
+                                                {% for i in range(5) %}
+                                                    {% if i < review['rating'] %}
+                                                        <i class="bi bi-star-fill text-warning"></i>
+                                                    {% else %}
+                                                        <i class="bi bi-star text-warning"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        <small class="text-muted">{{ review['created_at']|string|truncate(10, True, '') }}</small>
+                                    </div>
+                                    <p class="mb-0">{{ review['comment'] }}</p>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted">Ще немає відгуків про цей товар. Будьте першим!</p>
+                        {% endif %}
+                        
+                        <div class="mt-4">
+                            <h6>Залишити відгук</h6>
+                            <form action="{{ url_for('add_review', product_id=product['id']) }}" method="post">
+                                <div class="mb-3">
+                                    <label class="form-label">Ваша оцінка</label>
+                                    <div class="rating-input">
+                                        {% for i in range(5, 0, -1) %}
+                                            <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}" class="d-none">
+                                            <label for="star{{ i }}" class="bi bi-star fs-3" style="cursor: pointer;"></label>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="text" class="form-control" name="name" placeholder="Ваше ім'я" required>
+                                </div>
+                                <div class="mb-3">
+                                    <textarea class="form-control" name="comment" rows="3" placeholder="Ваш відгук" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Надіслати відгук</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="delivery" role="tabpanel">
+                        <h5>Доставка та оплата</h5>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h6><i class="bi bi-truck text-primary me-2"></i>Доставка</h6>
+                                        <ul class="mt-3">
+                                            <li>Нова Пошта - 1-3 дні</li>
+                                            <li>Укрпошта - 3-5 днів</li>
+                                            <li>Самовивіз з Києва</li>
+                                            <li>Кур'єром по Києву</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h6><i class="bi bi-credit-card text-primary me-2"></i>Оплата</h6>
+                                        <ul class="mt-3">
+                                            <li>Готівкою при отриманні</li>
+                                            <li>Оплата карткою онлайн</li>
+                                            <li>Розстрочка</li>
+                                            <li>Безготівковий розрахунок</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="col-lg-4">
+
+        {% if similar_products %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Схожі товари</h5>
+                </div>
+                <div class="card-body">
+                    {% for similar in similar_products %}
+                        <div class="d-flex mb-3">
+                            <img src="{{ url_for('static', filename='img/' + (similar['image'] or 'placeholder.png')) }}" 
+                                 class="rounded" 
+                                 style="width: 80px; height: 80px; object-fit: cover;"
+                                 alt="{{ similar['name'] }}">
+                            <div class="ms-3">
+                                <h6 class="mb-1">
+                                    <a href="{{ url_for('product_page', product_id=similar['id']) }}" class="text-decoration-none">
+                                        {{ similar['name'][:50] }}{% if similar['name']|length > 50 %}...{% endif %}
+                                    </a>
+                                </h6>
+                                <div class="text-primary fw-bold">{{ similar['price'] }} ₴</div>
+                                <a href="{{ url_for('add_to_cart', product_id=similar['id']) }}" 
+                                   class="btn btn-sm btn-outline-primary mt-2">
+                                    В кошик
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        
+
+        {% if viewed_products %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Переглянуті товари</h5>
+                </div>
+                <div class="card-body">
+                    {% for viewed in viewed_products %}
+                        {% if viewed['id'] != product['id'] %}
+                            <div class="d-flex mb-3">
+                                <img src="{{ url_for('static', filename='img/' + (viewed['image'] or 'placeholder.png')) }}" 
+                                     class="rounded" 
+                                     style="width: 80px; height: 80px; object-fit: cover;"
+                                     alt="{{ viewed['name'] }}">
+                                <div class="ms-3">
+                                    <h6 class="mb-1">
+                                        <a href="{{ url_for('product_page', product_id=viewed['id']) }}" class="text-decoration-none">
+                                            {{ viewed['name'][:50] }}{% if viewed['name']|length > 50 %}...{% endif %}
+                                        </a>
+                                    </h6>
+                                    <div class="text-primary fw-bold">{{ viewed['price'] }} ₴</div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        
+
+        <div class="sticky-top d-none d-lg-block" style="top: 20px;">
+            <div class="card">
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        <h3 class="text-primary">{{ product['price'] }} ₴</h3>
+                        {% if product.get('old_price') %}
+                            <div class="text-decoration-line-through text-muted">{{ product['old_price'] }} ₴</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('add_to_cart', product_id=product['id']) }}" 
+                           class="btn btn-primary btn-lg">
+                            <i class="bi bi-cart-plus"></i> Купити
+                        </a>
+                        
+                        <a href="{{ url_for('catalog_page', category_id=category['id'] if category else '') }}" 
+                           class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Назад до категорії
+                        </a>
+                    </div>
+                    
+                    <div class="mt-3 text-center small text-muted">
+                        <div class="mb-1">
+                            <i class="bi bi-shield-check text-success me-1"></i>
+                            <span>Офіційна гарантія</span>
+                        </div>
+                        <div>
+                            <i class="bi bi-truck text-success me-1"></i>
+                            <span>Безкоштовна доставка від 2000₴</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+
+
+<style>
+    .rating-input label:hover,
+    .rating-input label:hover ~ label {
+        color: #ffc107;
+    }
+    
+    .rating-input input:checked ~ label {
+        color: #ffc107;
+    }
+    
+    .rating .bi-star-fill,
+    .rating .bi-star {
+        color: #ffc107;
+    }
+    
+    .product-gallery img {
+        transition: transform 0.3s;
+    }
+    
+    .product-gallery img:hover {
+        transform: scale(1.05);
+    }
+    
+    @media (max-width: 992px) {
+        .sticky-top {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: white;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            padding: 10px;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        const ratingLabels = document.querySelectorAll('.rating-input label');
+        ratingLabels.forEach(label => {
+            label.addEventListener('click', function() {
+                const inputId = this.getAttribute('for');
+                document.getElementById(inputId).checked = true;
+            });
+        });
+        
+
+        const mainImage = document.getElementById('mainProductImage');
+        if (mainImage) {
+            mainImage.addEventListener('click', function() {
+                const modal = new bootstrap.Modal(document.createElement('div'));
+            
+            });
+        }
+        
+
+        const productTabs = document.querySelector('#productTabs');
+        if (productTabs) {
+            productTabs.addEventListener('shown.bs.tab', function (event) {
+                localStorage.setItem('activeProductTab', event.target.id);
+            });
+            
+            const activeTab = localStorage.getItem('activeProductTab');
+            if (activeTab) {
+                const tabTrigger = document.querySelector(`#${activeTab}`);
+                if (tabTrigger) {
+                    new bootstrap.Tab(tabTrigger).show();
+                }
+            }
+        }
+        
+
+        if (window.innerWidth < 992) {
+            const stickyHTML = `
+                <div class="mobile-sticky-bar">
+                    <div class="container">
+                        <div class="d-flex justify-content-between align-items-center py-2">
+                            <div>
+                                <div class="text-primary fw-bold fs-5">{{ product['price'] }} ₴</div>
+                                {% if product.get('old_price') %}
+                                    <div class="text-decoration-line-through text-muted small">{{ product['old_price'] }} ₴</div>
+                                {% endif %}
+                            </div>
+                            <a href="{{ url_for('add_to_cart', product_id=product['id']) }}" 
+                               class="btn btn-primary">
+                                <i class="bi bi-cart-plus"></i> Купити
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            const stickyBar = document.createElement('div');
+            stickyBar.innerHTML = stickyHTML;
+            stickyBar.className = 'd-lg-none';
+            document.body.appendChild(stickyBar.firstElementChild);
+        }
+    });
+</script>
 {% endblock %}

@@ -6,43 +6,263 @@
 <div class="row">
     <div class="col-md-3">
         <h5>Категорії</h5>
-        <ul class="list-group">
+        <div class="accordion" id="categoriesAccordion">
             {% for cat in main_categories %}
-                <li class="list-group-item {% if current_category and current_category['id'] == cat['id'] %}active{% endif %}">
-                    <a href="{{ url_for('catalog_page', category_id=cat['id']) }}" class="text-decoration-none {% if current_category and current_category['id'] == cat['id'] %}text-white{% endif %}">{{ cat['name'] }}</a>
-                </li>
-                {% for sub in subcategories %}
-                    {% if sub['parent_id'] == cat['id'] %}
-                        <li class="list-group-item ps-4 {% if current_category and current_category['id'] == sub['id'] %}active{% endif %}">
-                            <a href="{{ url_for('catalog_page', category_id=sub['id']) }}" class="text-decoration-none {% if current_category and current_category['id'] == sub['id'] %}text-white{% endif %}">{{ sub['name'] }}</a>
-                        </li>
-                    {% endif %}
-                {% endfor %}
+                {% set has_subcategories = subcategories|selectattr('parent_id', 'equalto', cat['id'])|list|length > 0 %}
+                
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading{{ cat['id'] }}">
+                        <button class="accordion-button {% if not (current_category and (current_category['id'] == cat['id'] or current_category['parent_id'] == cat['id'])) %}collapsed{% endif %}" 
+                                type="button" 
+                                data-bs-toggle="collapse" 
+                                data-bs-target="#collapse{{ cat['id'] }}" 
+                                aria-expanded="{% if current_category and (current_category['id'] == cat['id'] or current_category['parent_id'] == cat['id']) %}true{% else %}false{% endif %}" 
+                                aria-controls="collapse{{ cat['id'] }}">
+                            {{ cat['name'] }}
+                            {% if has_subcategories %}
+                                <span class="badge bg-secondary ms-2">{{ subcategories|selectattr('parent_id', 'equalto', cat['id'])|list|length }}</span>
+                            {% endif %}
+                        </button>
+                    </h2>
+                    <div id="collapse{{ cat['id'] }}" 
+                         class="accordion-collapse collapse {% if current_category and (current_category['id'] == cat['id'] or current_category['parent_id'] == cat['id']) %}show{% endif %}" 
+                         aria-labelledby="heading{{ cat['id'] }}" 
+                         data-bs-parent="#categoriesAccordion">
+                        <div class="accordion-body p-0">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item {% if current_category and current_category['id'] == cat['id'] %}active{% endif %}">
+                                    <a href="{{ url_for('catalog_page', category_id=cat['id']) }}" 
+                                       class="text-decoration-none d-block {% if current_category and current_category['id'] == cat['id'] %}text-white{% endif %}">
+                                        <strong>Всі {{ cat['name'] }}</strong>
+                                    </a>
+                                </li>
+                                
+                                {% for sub in subcategories %}
+                                    {% if sub['parent_id'] == cat['id'] %}
+                                        <li class="list-group-item {% if current_category and current_category['id'] == sub['id'] %}active{% endif %}">
+                                            <a href="{{ url_for('catalog_page', category_id=sub['id']) }}" 
+                                               class="text-decoration-none d-block ps-3 {% if current_category and current_category['id'] == sub['id'] %}text-white{% endif %}">
+                                                {{ sub['name'] }}
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             {% endfor %}
-        </ul>
+        </div>
     </div>
+    
     <div class="col-md-9">
-        <h3>Товари {% if current_category %} - {{ current_category['name'] }}{% endif %}</h3>
+        <div class="card mb-4">
+            <div class="card-body">
+                <form action="{{ url_for('search') }}" method="get" class="row g-2">
+                    <div class="col-md-10">
+                        <div class="input-group">
+                            <input type="text" 
+                                   class="form-control" 
+                                   name="q" 
+                                   placeholder="Пошук товарів за назвою, моделлю, артикулом або виробником..." 
+                                   value="{{ search_query if search_query else '' }}"
+                                   autocomplete="off">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="bi bi-search"></i> Пошук
+                            </button>
+                        </div>
+                        <div class="form-text">
+                            <small>Пошук враховує опечатки та знаходить схожі товари</small>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="{{ url_for('catalog_page') }}" class="btn btn-outline-secondary w-100">
+                            Очистити
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        {% if search_query %}
+            <div class="alert alert-info mb-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>Результати пошуку для: "{{ search_query }}"</strong>
+                        <span class="badge bg-primary ms-2">{{ products|length }} товарів</span>
+                    </div>
+                    <a href="{{ url_for('catalog_page') }}" class="btn btn-sm btn-outline-info">
+                        Показати всі товари
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+        
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('catalog_page') }}">Каталог</a></li>
+                {% if current_category %}
+                    {% if current_category['parent_id'] %}
+                        {% set parent_category = main_categories|selectattr('id', 'equalto', current_category['parent_id'])|first %}
+                        {% if parent_category %}
+                            <li class="breadcrumb-item">
+                                <a href="{{ url_for('catalog_page', category_id=parent_category['id']) }}">
+                                    {{ parent_category['name'] }}
+                                </a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                    <li class="breadcrumb-item active" aria-current="page">{{ current_category['name'] }}</li>
+                {% endif %}
+            </ol>
+        </nav>
+        
+        <h3>
+            {% if current_category %}
+                {{ current_category['name'] }}
+                <small class="text-muted">
+                    {% set subcats_count = subcategories|selectattr('parent_id', 'equalto', current_category['id'])|list|length %}
+                    {% if subcats_count > 0 %}
+                        ({{ subcats_count }} підкатегорій)
+                    {% endif %}
+                </small>
+            {% elif search_query %}
+                Результати пошуку
+            {% else %}
+                Всі товари
+            {% endif %}
+        </h3>
+        
+        {% if current_category %}
+            {% set current_subcats = subcategories|selectattr('parent_id', 'equalto', current_category['id'])|list %}
+            {% if current_subcats %}
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h5>Підкатегорії:</h5>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for subcat in current_subcats %}
+                                <a href="{{ url_for('catalog_page', category_id=subcat['id']) }}" 
+                                   class="btn btn-outline-primary btn-sm">
+                                    {{ subcat['name'] }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+        
         <div class="row row-cols-1 row-cols-md-3 g-4 mt-2">
             {% for product in products %}
             <div class="col">
-                <div class="card h-100">
-                    <img src="{{ url_for('static', filename='img/' + (product['image'] or 'placeholder.png')) }}" class="card-img-top" alt="{{ product['name'] }}">
+                <div class="card h-100 product-card">
+                    <a href="{{ url_for('product_page', product_id=product['id']) }}">
+                        <img src="{{ url_for('static', filename='img/' + (product['image'] or 'placeholder.png')) }}" 
+                             class="card-img-top" 
+                             alt="{{ product['name'] }}"
+                             style="height: 200px; object-fit: cover;">
+                    </a>
                     <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">{{ product['name'] }}</h5>
-                        <p class="card-text">{{ product['description'][:100] }}{% if product['description']|length > 100 %}...{% endif %}</p>
-                        <div class="mt-auto d-flex justify-content-between align-items-center">
-                            <span class="fw-bold">{{ product['price'] }} ₴</span>
-                            <a href="{{ url_for('add_to_cart', product_id=product['id']) }}" class="btn btn-primary btn-sm">Додати в кошик</a>
+                        <h5 class="card-title">
+                            <a href="{{ url_for('product_page', product_id=product['id']) }}" 
+                               class="text-decoration-none text-dark">
+                                {{ product['name'] }}
+                            </a>
+                        </h5>
+                        <p class="card-text text-muted small">{{ product['description'][:120] }}{% if product['description']|length > 120 %}...{% endif %}</p>
+                        <div class="mt-auto">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-bold text-primary h5 mb-0">{{ product['price'] }} ₴</span>
+                                {% if product['article'] %}
+                                    <span class="badge bg-secondary">Арт: {{ product['article'] }}</span>
+                                {% endif %}
+                            </div>
+                            {% if product['manufacturer'] %}
+                                <div class="mb-2">
+                                    <small class="text-muted">Виробник: {{ product['manufacturer'] }}</small>
+                                </div>
+                            {% endif %}
+                            <a href="{{ url_for('add_to_cart', product_id=product['id']) }}" 
+                               class="btn btn-primary w-100">
+                                Додати в кошик
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
             {% else %}
-            <p>Немає товарів у цій категорії.</p>
+            <div class="col-12">
+                <div class="alert alert-warning">
+                    {% if search_query %}
+                        За вашим запитом "{{ search_query }}" товарів не знайдено.
+                    {% elif current_category %}
+                        Немає товарів у категорії "{{ current_category['name'] }}"
+                    {% else %}
+                        Немає товарів у каталозі
+                    {% endif %}
+                </div>
+            </div>
             {% endfor %}
         </div>
     </div>
 </div>
-{% endblock %}
 
+<style>
+    .accordion-button:not(.collapsed) {
+        background-color: var(--sb-accent);
+        color: white;
+    }
+    
+    .accordion-button:focus {
+        border-color: var(--sb-accent);
+        box-shadow: 0 0 0 0.25rem rgba(255, 102, 0, 0.25);
+    }
+    
+    .product-card {
+        transition: transform 0.3s, box-shadow 0.3s;
+        border: 1px solid #e0e0e0;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        border-color: var(--sb-accent);
+    }
+    
+    .list-group-item.active {
+        background-color: var(--sb-accent);
+        border-color: var(--sb-accent);
+    }
+    
+    .btn-outline-primary {
+        border-color: var(--sb-accent);
+        color: var(--sb-accent);
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: var(--sb-accent);
+        border-color: var(--sb-accent);
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        {% if current_category and current_category.parent_id %}
+            const parentId = {{ current_category.parent_id }};
+            const collapseElement = document.getElementById('collapse' + parentId);
+            if (collapseElement) {
+                const bsCollapse = new bootstrap.Collapse(collapseElement, {
+                    toggle: false
+                });
+                bsCollapse.show();
+            }
+        {% endif %}
+        
+        const searchInput = document.querySelector('input[name="q"]');
+        if (searchInput) {
+            searchInput.focus();
+            searchInput.setSelectionRange(searchInput.value.length, searchInput.value.length);
+        }
+    });
+</script>
+{% endblock %}

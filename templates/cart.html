@@ -3,41 +3,453 @@
 {% block title %}SB Gear - Кошик{% endblock %}
 
 {% block content %}
-<h1 class="mb-4">Кошик</h1>
+<div class="container">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Головна</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Кошик</li>
+        </ol>
+    </nav>
 
-{% if items %}
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Товар</th>
-            <th>Ціна</th>
-            <th>Кількість</th>
-            <th>Сума</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in items %}
-        <tr>
-            <td>{{ item['name'] }}</td>
-            <td>{{ item['price'] }} ₴</td>
-            <td>{{ item['qty'] }}</td>
-            <td>{{ item['total_price'] }} ₴</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <h1 class="mb-4">
+        <i class="bi bi-cart3 me-2"></i>Кошик покупок
+        {% if items %}
+            <span class="badge bg-primary rounded-pill ms-2">{{ items|sum(attribute='qty') }}</span>
+        {% endif %}
+    </h1>
 
-<div class="d-flex justify-content-between align-items-center mt-3">
-    <h4>Всього: {{ total }} ₴</h4>
-    <div>
-        <a href="{{ url_for('clear_cart') }}" class="btn btn-danger me-2">Очистити кошик</a>
-        <a href="{{ url_for('order') }}" class="btn btn-primary">Оформити замовлення</a>
+    {% if items %}
+    <div class="row">
+        <div class="col-lg-8">
+
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Товари у кошику</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 60%">Товар</th>
+                                    <th class="text-center">Ціна</th>
+                                    <th class="text-center">Кількість</th>
+                                    <th class="text-center">Сума</th>
+                                    <th class="text-center">Дії</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in items %}
+                                <tr class="align-middle">
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <a href="{{ url_for('product_page', product_id=item['id']) }}" 
+                                               class="me-3">
+                                                <img src="{{ url_for('static', filename='img/' + (item['image'] or 'placeholder.png')) }}" 
+                                                     class="rounded" 
+                                                     alt="{{ item['name'] }}"
+                                                     style="width: 80px; height: 80px; object-fit: cover;">
+                                            </a>
+                                            <div>
+                                                <h6 class="mb-1">
+                                                    <a href="{{ url_for('product_page', product_id=item['id']) }}" 
+                                                       class="text-decoration-none text-dark">
+                                                        {{ item['name'] }}
+                                                    </a>
+                                                </h6>
+                                                {% if item.get('article') %}
+                                                    <small class="text-muted">Арт: {{ item['article'] }}</small>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="fw-bold text-primary">{{ item['price'] }} ₴</div>
+                                        {% if item.get('old_price') and item['old_price'] > item['price'] %}
+                                            <small class="text-decoration-line-through text-muted">
+                                                {{ item['old_price'] }} ₴
+                                            </small>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="input-group input-group-sm" style="max-width: 120px; margin: 0 auto;">
+                                            <form action="{{ url_for('update_cart') }}" method="POST" class="d-flex">
+                                                <input type="hidden" name="product_id" value="{{ item['id'] }}">
+                                                <button type="submit" name="action" value="decrease" 
+                                                        class="btn btn-outline-secondary" {% if item['qty'] <= 1 %}disabled{% endif %}>
+                                                    <i class="bi bi-dash"></i>
+                                                </button>
+                                                <input type="number" 
+                                                       class="form-control text-center border-secondary" 
+                                                       name="qty_{{ item['id'] }}" 
+                                                       value="{{ item['qty'] }}" 
+                                                       min="1" 
+                                                       max="99"
+                                                       style="width: 50px;">
+                                                <button type="submit" name="action" value="increase" 
+                                                        class="btn btn-outline-secondary">
+                                                    <i class="bi bi-plus"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                        <small>
+                                            <a href="{{ url_for('remove_from_cart', product_id=item['id']) }}" 
+                                               class="text-decoration-none text-muted small">
+                                                <i class="bi bi-trash me-1"></i>Видалити
+                                            </a>
+                                        </small>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="fw-bold text-primary h5 mb-0">{{ item['total_price'] }} ₴</div>
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="{{ url_for('delete_from_cart', product_id=item['id']) }}" 
+                                           class="btn btn-outline-danger btn-sm"
+                                           onclick="return confirm('Видалити цей товар з кошика?')">
+                                            <i class="bi bi-x-lg"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('catalog_page') }}" class="btn btn-outline-primary">
+                            <i class="bi bi-arrow-left me-2"></i>Продовжити покупки
+                        </a>
+                        <a href="{{ url_for('clear_cart') }}" 
+                           class="btn btn-outline-danger"
+                           onclick="return confirm('Очистити весь кошик?')">
+                            <i class="bi bi-trash me-2"></i>Очистити кошик
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+
+            {% if recommended_products %}
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-stars me-2"></i>Рекомендуємо також</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row row-cols-1 row-cols-md-2 g-3">
+                        {% for product in recommended_products %}
+                        <div class="col">
+                            <div class="d-flex align-items-center">
+                                <a href="{{ url_for('product_page', product_id=product['id']) }}" class="me-3">
+                                    <img src="{{ url_for('static', filename='img/' + (product['image'] or 'placeholder.png')) }}" 
+                                         class="rounded" 
+                                         alt="{{ product['name'] }}"
+                                         style="width: 80px; height: 80px; object-fit: cover;">
+                                </a>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">
+                                        <a href="{{ url_for('product_page', product_id=product['id']) }}" 
+                                           class="text-decoration-none text-dark">
+                                            {{ product['name'] }}
+                                        </a>
+                                    </h6>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="text-primary fw-bold">{{ product['price'] }} ₴</span>
+                                        <a href="{{ url_for('add_to_cart', product_id=product['id']) }}" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-cart-plus"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-4">
+
+            <div class="card mb-4 sticky-top" style="top: 20px;">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-receipt me-2"></i>Сума замовлення</h5>
+                </div>
+                <div class="card-body">
+                    <div class="order-summary">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Товари ({{ items|sum(attribute='qty') }} шт.):</span>
+                            <span>{{ total }} ₴</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Доставка:</span>
+                            {% if total >= 2000 %}
+                                <span class="text-success">Безкоштовно</span>
+                            {% else %}
+                                <span>100 ₴</span>
+                            {% endif %}
+                        </div>
+                        
+                        {% if total < 2000 %}
+                            <div class="alert alert-info py-2 mb-3">
+                                <i class="bi bi-info-circle me-2"></i>
+                                Додайте товарів на {{ 2000 - total }} ₴ для безкоштовної доставки
+                            </div>
+                        {% else %}
+                            <div class="alert alert-success py-2 mb-3">
+                                <i class="bi bi-check-circle me-2"></i>
+                                Безкоштовна доставка!
+                            </div>
+                        {% endif %}
+                        
+                        <hr>
+                        
+                        <div class="d-flex justify-content-between mb-4">
+                            <h5 class="mb-0">Разом до сплати:</h5>
+                            <h4 class="text-primary mb-0">
+                                {% if total >= 2000 %}
+                                    {{ total }} ₴
+                                {% else %}
+                                    {{ total + 100 }} ₴
+                                {% endif %}
+                            </h4>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <a href="{{ url_for('order') }}" class="btn btn-primary btn-lg">
+                                <i class="bi bi-bag-check me-2"></i>Оформити замовлення
+                            </a>
+                        </div>
+                        
+                        <div class="mt-3 text-center">
+                            <small class="text-muted">
+                                <i class="bi bi-shield-check me-1"></i>
+                                Безпечна оплата та конфіденційність
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0"><i class="bi bi-credit-card me-2"></i>Способи оплати</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="border rounded p-2 text-center h-100">
+                                <i class="bi bi-cash-coin text-success d-block fs-3 mb-2"></i>
+                                <small class="d-block">Готівкою при отриманні</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="border rounded p-2 text-center h-100">
+                                <i class="bi bi-credit-card text-primary d-block fs-3 mb-2"></i>
+                                <small class="d-block">Онлайн оплата картою</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="border rounded p-2 text-center h-100">
+                                <i class="bi bi-phone text-info d-block fs-3 mb-2"></i>
+                                <small class="d-block">Google Pay / Apple Pay</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="border rounded p-2 text-center h-100">
+                                <i class="bi bi-bank text-warning d-block fs-3 mb-2"></i>
+                                <small class="d-block">Безготівковий розрахунок</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+    {% else %}
+
+    <div class="text-center py-5">
+        <div class="mb-4">
+            <i class="bi bi-cart-x display-1 text-muted"></i>
+        </div>
+        <h3 class="mb-3">Ваш кошик порожній</h3>
+        <p class="text-muted mb-4">Додайте товари, щоб зробити замовлення</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{{ url_for('catalog_page') }}" class="btn btn-primary btn-lg">
+                <i class="bi bi-bag me-2"></i>Перейти до покупок
+            </a>
+            <a href="{{ url_for('index') }}" class="btn btn-outline-primary btn-lg">
+                <i class="bi bi-house me-2"></i>На головну
+            </a>
+        </div>
+        
+
+        <div class="mt-5">
+            <h5 class="mb-4">Популярні категорії</h5>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <a href="{{ url_for('catalog_page') }}" class="text-decoration-none">
+                        <div class="card h-100 text-center border-0 shadow-sm">
+                            <div class="card-body">
+                                <i class="bi bi-bullseye text-primary display-6 mb-3"></i>
+                                <h6>Пістолети</h6>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a href="{{ url_for('catalog_page') }}" class="text-decoration-none">
+                        <div class="card h-100 text-center border-0 shadow-sm">
+                            <div class="card-body">
+                                <i class="bi bi-bullseye text-primary display-6 mb-3"></i>
+                                <h6>Гвинтівки</h6>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a href="{{ url_for('catalog_page') }}" class="text-decoration-none">
+                        <div class="card h-100 text-center border-0 shadow-sm">
+                            <div class="card-body">
+                                <i class="bi bi-shield-check text-primary display-6 mb-3"></i>
+                                <h6>Захист</h6>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <a href="{{ url_for('catalog_page') }}" class="text-decoration-none">
+                        <div class="card h-100 text-center border-0 shadow-sm">
+                            <div class="card-body">
+                                <i class="bi bi-circle text-primary display-6 mb-3"></i>
+                                <h6>Амуніція</h6>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </div>
 
-{% else %}
-<p>Ваш кошик порожній.</p>
-<a href="{{ url_for('catalog_page') }}" class="btn btn-primary mt-3">Перейти до каталогу</a>
-{% endif %}
+<style>
+    .sticky-top {
+        position: sticky;
+        top: 20px;
+    }
+    
+    .table tbody tr:hover {
+        background-color: rgba(255, 102, 0, 0.05);
+    }
+    
+    .input-group .btn-outline-secondary:hover {
+        background-color: var(--sb-accent);
+        border-color: var(--sb-accent);
+        color: white;
+    }
+    
+    .btn-primary {
+        background-color: var(--sb-accent);
+        border-color: var(--sb-accent);
+    }
+    
+    .btn-primary:hover {
+        background-color: #e65c00;
+        border-color: #e65c00;
+    }
+    
+    .input-group input[type="number"] {
+        -moz-appearance: textfield;
+    }
+    
+    .input-group input[type="number"]::-webkit-outer-spin-button,
+    .input-group input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
 
+<script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+        const quantityInputs = document.querySelectorAll('input[name^="qty_"]');
+        quantityInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                const form = this.closest('form');
+                if (form) {
+
+                    fetch(form.action, {
+                        method: 'POST',
+                        body: new FormData(form),
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    }).then(response => {
+                        if (response.ok) {
+                            location.reload();
+                        }
+                    });
+                }
+            });
+        });
+        
+
+        const buttons = document.querySelectorAll('button[name="action"]');
+        buttons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const form = this.closest('form');
+                const input = form.querySelector('input[name^="qty_"]');
+                let currentValue = parseInt(input.value);
+                
+                if (this.value === 'increase') {
+                    input.value = currentValue + 1;
+                } else if (this.value === 'decrease' && currentValue > 1) {
+                    input.value = currentValue - 1;
+                }
+                
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: new FormData(form),
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    }
+                });
+            });
+        });
+        
+
+        const totalAmount = {{ total }};
+        if (totalAmount > 0 && totalAmount < 2000) {
+            const amountNeeded = 2000 - totalAmount;
+            const progress = (totalAmount / 2000) * 100;
+            
+            const progressHTML = `
+                <div class="mt-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <small>До безкоштовної доставки</small>
+                        <small>${amountNeeded} ₴</small>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-success" style="width: ${progress}%"></div>
+                    </div>
+                </div>
+            `;
+            
+            const deliveryAlert = document.querySelector('.alert-info');
+            if (deliveryAlert) {
+                deliveryAlert.insertAdjacentHTML('afterend', progressHTML);
+            }
+        }
+    });
+</script>
 {% endblock %}
