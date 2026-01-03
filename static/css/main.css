@@ -184,3 +184,73 @@ footer .opacity-75:hover {
 .user-select-none {
     user-select: none;
 }
+
+
+
+/* Увеличиваем общий отступ для body */
+body {
+    padding-top: 100px !important; /* Увеличиваем с 90px до 100px */
+}
+
+/* Дополнительные отступы для каталога */
+.catalog-container {
+    margin-top: 20px;
+}
+
+/* Для страницы каталога с аккордеоном */
+#categoriesAccordion {
+    margin-top: 20px;
+}
+
+/* Для хлебных крошек в каталоге */
+.catalog-page .breadcrumb {
+    padding-top: 15px;
+    margin-bottom: 25px;
+}
+
+/* Для заголовка каталога */
+.catalog-page h1,
+.catalog-page h3 {
+    margin-top: 15px;
+    margin-bottom: 25px;
+}
+
+/* Для контейнера с товарами в каталоге */
+.catalog-page .row-cols-md-3 {
+    margin-top: 20px;
+}
+
+/* Если используешь стики-сайдбар в каталоге */
+.catalog-page .sticky-top {
+    top: 120px; /* Чтобы не перекрывалось навбаром */
+}
+
+/* Адаптивность */
+@media (max-width: 992px) {
+    body {
+        padding-top: 95px !important;
+    }
+}
+
+@media (max-width: 767px) {
+    body {
+        padding-top: 85px !important;
+    }
+    
+    .catalog-page .breadcrumb {
+        padding-top: 10px;
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    body {
+        padding-top: 80px !important;
+    }
+    
+    .catalog-page h1,
+    .catalog-page h3 {
+        margin-top: 10px;
+        margin-bottom: 20px;
+    }
+}

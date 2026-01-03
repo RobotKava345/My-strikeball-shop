@@ -242,3 +242,54 @@
 [data-bs-theme="dark"] .hero-section {
     background: linear-gradient(135deg, rgba(10,10,10,0.9) 0%, rgba(255,140,66,0.8) 100%);
 }
+
+/* Для герой-секции в темной теме */
+[data-bs-theme="dark"] .hero-section {
+    background-color: #2d2d2d !important;
+    background: #2d2d2d !important;
+    color: #f0f0f0;
+}
+
+[data-bs-theme="dark"] .hero-section h1,
+[data-bs-theme="dark"] .hero-section .display-4,
+[data-bs-theme="dark"] .hero-section .lead {
+    color: #f0f0f0;
+}
+
+[data-bs-theme="dark"] .hero-section .btn-primary {
+    background-color: var(--sb-accent);
+    border-color: var(--sb-accent);
+    color: white;
+}
+
+[data-bs-theme="dark"] .hero-section .btn-primary:hover {
+    background-color: #e67e00;
+    border-color: #e67e00;
+}
+
+/* Если у тебя есть конкретный класс для контейнера героя */
+[data-bs-theme="dark"] .container .row.align-items-center {
+    background-color: #2d2d2d;
+    padding: 40px;
+    border-radius: 12px;
+}
+
+/* Или если хочешь именно эту секцию */
+[data-bs-theme="dark"] main .container:first-child .row.align-items-center {
+    background-color: #2d2d2d;
+    padding: 40px 20px;
+    border-radius: 12px;
+    margin-bottom: 40px;
+}
+
+/* Для текста внутри */
+[data-bs-theme="dark"] main .container:first-child .row.align-items-center h1,
+[data-bs-theme="dark"] main .container:first-child .row.align-items-center p {
+    color: #f0f0f0;
+}
+
+/* Секции about и contacts */
+[data-bs-theme="dark"] #about,
+[data-bs-theme="dark"] #contacts {
+    box-shadow: 0 8px 30px rgba(255, 255, 255, 0.05) !important;
+}
